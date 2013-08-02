@@ -49,18 +49,25 @@ Version.prototype.install = function (db, parent) {
 
   var self = this
   var sep = this.delimiter
+
   /* -- put -- */
   db.put = function (key, value, version, options, cb) {
     // put(key, value [,version] [,options] [,cb])
 
-    // (k, v, cb)
-    if (!cb && typeof version == "function") {
-      cb = version
-      version = undefined
+    // (k, v, [,vr/o], cb)
+    if (!cb && typeof options == "function") {
+      cb = options
+      options = undefined
     }
     // (k, v, o[, cb])
     if (!options && typeof version == "object") {
       options = version
+      version = undefined
+    }
+
+    // (k, v, cb)
+    if (typeof version == "function") {
+      cb = version
       version = undefined
     }
 
@@ -82,9 +89,9 @@ Version.prototype.install = function (db, parent) {
     // get(key [,version] [,options] [,cb])
 
     // (k, cb)
-    if (!cb && typeof version == "function") {
-      cb = version
-      version = undefined
+    if (!cb && typeof options == "function") {
+      cb = options
+      options = undefined
     }
     // (k, o [,cb])
     if (!options && typeof version == "object") {
@@ -97,6 +104,12 @@ Version.prototype.install = function (db, parent) {
       options = undefined
     }
 
+    // (k, cb)
+    if (typeof version == "function") {
+      cb = version
+      version = undefined
+    }
+
     if (version === undefined) {
       return db.getLast(key, options, cb)
     }
@@ -105,8 +118,6 @@ Version.prototype.install = function (db, parent) {
   }
 
   function getEnd(reverse, key, options, cb) {
-    // TODO options???
-
     if (!cb && typeof options == "function") {
       cb = options
       options = undefined
@@ -116,6 +127,8 @@ Version.prototype.install = function (db, parent) {
     function collect(records) {
       if (!records || !records.length) return cb(new Error("Did not find a record %s", key))
       var r = records[0]
+      // TODO other options?
+      if (options && options.valueEncoding == "json") r.value = JSON.parse(r.value)
       return cb(null, r.value, r.version)
     }
 
