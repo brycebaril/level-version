@@ -82,11 +82,13 @@ test("stream ranged reverse", function (t) {
 })
 
 test("stream ranged start/end", function (t) {
-  t.plan(3)
+  t.plan(7)
 
   var versions = []
   db.createReadStream({minVersion: 1, maxVersion: 500, start: "pet", end: "pet"})
     .on("data", function (record) {
+      t.ok(record.key, "Record has a key")
+      t.ok(record.value, "Record has a value")
       t.ok(record.version != null, "record has a version")
       versions.push(record.version)
     })
@@ -96,11 +98,13 @@ test("stream ranged start/end", function (t) {
 })
 
 test("stream ranged start/end reverse", function (t) {
-  t.plan(3)
+  t.plan(7)
 
   var versions = []
   db.createReadStream({minVersion: 1, maxVersion: 500, start: "pet", end: "pet", reverse: true})
     .on("data", function (record) {
+      t.ok(record.key, "Record has a key")
+      t.ok(record.value, "Record has a value")
       t.ok(record.version != null, "record has a version")
       versions.push(record.version)
     })
@@ -110,11 +114,13 @@ test("stream ranged start/end reverse", function (t) {
 })
 
 test("readStream alias", function (t) {
-  t.plan(4)
+  t.plan(10)
 
   var versions = []
   db.readStream({limit: 3})
     .on("data", function (record) {
+      t.ok(record.key, "Record has a key")
+      t.ok(record.value, "Record has a value")
       t.ok(record.version != null, "record has a version")
       versions.push(record.version)
     })

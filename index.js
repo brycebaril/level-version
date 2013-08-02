@@ -167,7 +167,7 @@ Version.prototype.install = function (db, parent) {
     if (options.maxVersion == null) options.maxVersion = u.MAX_VERSION
     if (options.minVersion == null) options.minVersion = u.MIN_VERSION
 
-    var removeKeys = ! options.keys
+    var removeKeys = (options.keys === false) ? true : false
     options.keys = true
 
     var filter = through({objectMode: true}, function (record, encoding, cb) {
@@ -195,7 +195,6 @@ Version.prototype.install = function (db, parent) {
       }
       cb()
     })
-
     parent.createReadStream(fix(options))
       .pipe(filter)
 

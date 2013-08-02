@@ -43,11 +43,13 @@ test("batch delete", function (t) {
 })
 
 test("stream it back", function (t) {
-  t.plan(7)
+  t.plan(19)
 
   var versions = []
   db.createReadStream()
     .on("data", function (record) {
+      t.ok(record.key, "Record has a key")
+      t.ok(record.value, "Record has a value")
       t.ok(record.version != null, "record has a version")
       versions.push(record.version)
     })
