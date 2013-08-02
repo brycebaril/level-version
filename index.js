@@ -19,8 +19,8 @@ var decode = u.decode
 /**
  * @param  {Object} options  Wrapping options
  *                           - gcMaxVersions [no default] When doing GC it will only keep gcMaxVersions for each key
- *                           - gcMaxAge [no default] When doing GC only keep versions where (most_recent_timestamp) - gcMaxAge > version
- *                           - gcFreqMs [60000] How often the GC runs to apply GC rules.
+ *                           - gcMaxAge [no default] When doing GC only keep versions where (latest_version) - gcMaxAge > version
+ *                           - gcFreqMs [60000] How often the GC runs to apply GC rules. Only runs if a gcMax* option is set.
  *                           - defaultVersion [Date.now] A function to provide the default version if none is specified.
  *                           - delimiter [\xff] The internal delimiter to use.
  */
