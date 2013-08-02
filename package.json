@@ -27,18 +27,15 @@
   "devDependencies": {
     "tap": "~0.4.3",
     "tape": "~1.0.4",
-    "level": "~0.12.0",
     "level-test": "~1.5.1",
     "level-sublevel": "~4.8.3"
   },
   "dependencies": {
-    "level-sublevel": "~4.8.0",
-    "level-hooks": "~4.4.3",
     "level-onion": "0.0.1",
     "bytewise": "~0.5.0",
     "level-fix-range": "~2.0.0",
     "xtend": "~2.0.6",
     "concat-stream": "~1.0.0",
-    "through2": "0.0.4"
+    "through2": "0.0.5"
   }
 }
