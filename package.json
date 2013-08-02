@@ -38,6 +38,7 @@
     "bytewise": "~0.5.0",
     "level-fix-range": "~2.0.0",
     "xtend": "~2.0.6",
-    "concat-stream": "~1.0.0"
+    "concat-stream": "~1.0.0",
+    "through2": "0.0.4"
   }
 }

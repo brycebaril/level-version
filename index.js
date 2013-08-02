@@ -7,9 +7,7 @@ var wrap = require("level-onion")
 var fix = require("level-fix-range")
 var concat = require("concat-stream")
 
-var VersionFilter = require("./streams").VersionFilter
-var StripKeys = require("./streams").StripKeys
-var VersionTransform = require("./streams").VersionTransform
+var through = require("through2")
 
 var u = require("./util")
 var makeKey = u.makeKey
@@ -200,16 +198,50 @@ Version.prototype.install = function (db, parent) {
     if (options.max != null) options.max = options.max + sep + sep
     if (options.end != null) options.end = options.end + sep + sep
 
+    if (options._start) options.start = options._start
+    if (options._end) options.end = options._end
+
+    if (options.maxVersion == null) options.maxVersion = u.MAX_VERSION
+    if (options.minVersion == null) options.minVersion = u.MIN_VERSION
+
     var removeKeys = ! options.keys
     options.keys = true
-    options.delimiter = sep
 
-    var filter = new VersionFilter(options)
+    var filter = through({objectMode: true}, function (record, encoding, cb) {
+      if (typeof record != "object") {
+        if (options.keys) record = {key: record}
+        if (options.values) record = {value: record}
+        // if both are true... wtf?
+      }
+
+      // split off version key & add it to record
+      var kv = unmakeKey(sep, record.key)
+
+      if (options.versionLimit) {
+        if (kv.key != this.currentKey) {
+          this.currentKey = kv.key
+          this.currentCount = 0
+        }
+        if (this.currentCount++ >= options.versionLimit) return cb()
+      }
+
+      if (kv.version >= options.minVersion && kv.version <= options.maxVersion) {
+        record.version = kv.version
+        record.key = kv.key
+        this.push(record)
+      }
+      cb()
+    })
+
     parent.createReadStream(fix(options))
       .pipe(filter)
 
     if (removeKeys) {
-      var stripKeys = new StripKeys()
+      var stripKeys = through({objectMode: true}, function (record, encoding, cb) {
+        record.key = undefined
+        this.push(record)
+        cb()
+      })
       filter.pipe(stripKeys)
       return stripKeys
     }
@@ -245,25 +277,19 @@ Version.prototype.install = function (db, parent) {
   db.createVersionStream = function (key, options) {
     if (key == null) throw new Error("Key required for createVersionStream")
     options = options || {}
-    options.delimiter = sep
-
-    var filter = new VersionFilter(options)
 
     // Ignore start/min end/max
     options.start = options.min = options.end = options.max = undefined
 
-    options.start = (options.minVersion != null)
+    options._start = (options.minVersion != null)
                   ? makeKey(sep, key, options.minVersion)
                   : key + sep + sep
 
-    options.end = (options.maxVersion != null)
+    options._end = (options.maxVersion != null)
                 ? makeKey(sep, key, options.maxVersion)
                 : key + sep
 
-    parent.createReadStream(fix(options))
-      .pipe(filter)
-
-    return filter
+    return db.createReadStream(options)
   }
 
   db.versionStream = db.createVersionStream
@@ -271,8 +297,13 @@ Version.prototype.install = function (db, parent) {
   /* -- createWriteStream -- */
   db.createWriteStream = function (options) {
     options = options || {}
-    options.delimiter = sep
-    var transform = new VersionTransform(self.defaultVersion, options)
+
+    var transform = through({objectMode: true}, function (record, encoding, cb) {
+      var version = (record.version != null) ? record.version : self.defaultVersion()
+      record.key = makeKey(sep, record.key, version)
+      this.push(record)
+      cb()
+    })
 
     var ws = parent.createWriteStream(options)
     transform.pipe(ws)

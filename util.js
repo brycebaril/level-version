@@ -3,8 +3,11 @@ module.exports.unmakeKey = unmakeKey
 module.exports.wrapCb = wrapCb
 module.exports.encode = encode
 module.exports.decode = decode
+
 module.exports.MAX_VERSION = Math.pow(2, 53)
 module.exports.MIN_VERSION = -Math.pow(2, 53)
+
+// TODO currently versions locked to numbers...
 
 var bytewise = require("bytewise")
 
@@ -20,7 +23,7 @@ function unmakeKey(delimiter, key) {
 
   var version = decode(parts.pop())
 
-  return {key: parts.join(delimiter), version: version}
+  return {key: parts.join(delimiter), version: +version}
 }
 
 function wrapCb(version, cb) {
@@ -33,8 +36,6 @@ function wrapCb(version, cb) {
     return cb.apply(null, args)
   }
 }
-
-// TODO currently versions locked to numbers...
 
 // Returns versions are stored in reverse order (-version) because the most common stream is new->old
 
