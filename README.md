@@ -7,7 +7,7 @@ Create versioned data inside leveldb.
 
 `level-version` wraps levelup in a similar way to `level-sublevel` works, where instead of assigning your keys a prefix, it postfixes your keys with a version stamp.
 
-By default the versions are millisecond timestamps, but they can be anything you want. Either specify them manually or provide a default version generating function. For some of the features to work correctly the versions should lexically sort. In the initial version some features only support numeric versions, but with some modifications they should all be able to support non-numeric lexically ordered values.
+By default the versions are millisecond timestamps, but they can be anything you want. Either specify them manually or provide a default version generating function. For some of the features to work correctly the versions should lexically sort. In the initial version some features only support numeric versions, but with some modifications it should all be able to support non-numeric lexically ordered values.
 
 It also includes GC options that let you control how many or how old of versions you want to keep around.
 
@@ -32,8 +32,7 @@ db.put(key, value, function () {
 })
 
 // insert a record explicitly at version 10
-var version = 10
-db.put(key, value, version, function () {
+db.put(key, value, {version: 10}, function () {
   /* ... */
 })
 
@@ -57,12 +56,12 @@ db.getFirst(key, function (err, value) {
 })
 
 // get a specific version
-db.get(key, version, function (err, value) {
+db.get(key, {version: 10}, function (err, value) {
   /* ... */
 })
 
 // remove an entry
-db.del(key, version, function () {
+db.del(key, {version: 10}, function () {
   /* ... */
 })
 
@@ -81,6 +80,7 @@ API
   * getLast()
   * del()
   * createVersionStream()
+  * createReadStream()
+  * createWriteStream()
+  * Garbage Collection
   * etc.
-
-
