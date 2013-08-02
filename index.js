@@ -49,70 +49,30 @@ Version.prototype.install = function (db, parent) {
   var sep = this.delimiter
 
   /* -- put -- */
-  db.put = function (key, value, version, options, cb) {
-    // put(key, value [,version] [,options] [,cb])
-
-    // (k, v, [,vr/o], cb)
+  db.put = function (key, value, options, cb) {
     if (!cb && typeof options == "function") {
       cb = options
-      options = undefined
-    }
-    // (k, v, o[, cb])
-    if (!options && typeof version == "object") {
-      options = version
-      version = undefined
+      options = {}
     }
 
-    // (k, v, cb)
-    if (typeof version == "function") {
-      cb = version
-      version = undefined
-    }
+    var version = (options.version != null) ? options.version : self.defaultVersion()
 
-    // (k, v[, o] [,cb])
-    // (k, v, vr [,o] [,cb]
-    if (version === undefined) version = self.defaultVersion()
-
-    // parent is (expected to be) put(key, value [,options] [,cb])
-    if (!cb && typeof options == "function") {
-      cb = options
-      options = undefined
-    }
     return parent.put(makeKey(sep, key, version), value, options, wrapCb(version, cb))
   }
 
 
   /* -- get -- */
-  db.get = function (key, version, options, cb) {
-    // get(key [,version] [,options] [,cb])
-
-    // (k, cb)
+  db.get = function (key, options, cb) {
     if (!cb && typeof options == "function") {
       cb = options
-      options = undefined
-    }
-    // (k, o [,cb])
-    if (!options && typeof version == "object") {
-      options = version
-      version = undefined
+      options = {}
     }
 
-    if (!cb && typeof options == "function") {
-      cb = options
-      options = undefined
-    }
-
-    // (k, cb)
-    if (typeof version == "function") {
-      cb = version
-      version = undefined
-    }
-
-    if (version === undefined) {
+    if (options.version == null) {
       return db.getLast(key, options, cb)
     }
 
-    return parent.get(makeKey(sep, key, version), options, wrapCb(version, cb))
+    return parent.get(makeKey(sep, key, options.version), options, wrapCb(options.version, cb))
   }
 
   function getEnd(reverse, key, options, cb) {
@@ -143,11 +103,12 @@ Version.prototype.install = function (db, parent) {
   }
 
   /* -- del -- */
-  db.del = function (key, version, options, cb) {
+  db.del = function (key, options, cb) {
     if (!cb && typeof options == "function") {
       cb = options
-      options = undefined
+      options = {}
     }
+    var version = (options.version != null) ? options.version : self.defaultVersion()
     return parent.del(makeKey(sep, key, version), options, wrapCb(version, cb))
   }
 
@@ -158,14 +119,16 @@ Version.prototype.install = function (db, parent) {
   function Batch() {
     this.ops = []
   }
-  Batch.prototype.put = function (key, value, version, options) {
+  Batch.prototype.put = function (key, value, options) {
     // TODO ignoring options...
-    this.ops.push({type: "put", key: key, value: value, version: version})
+    options = options || {}
+    this.ops.push({type: "put", key: key, value: value, version: options.version})
     return this
   }
-  Batch.prototype.del = function (key, version, options) {
+  Batch.prototype.del = function (key, options) {
     // TODO ignoring options...
-    this.ops.push({type: "del", key: key, version: version})
+    options = options || {}
+    this.ops.push({type: "del", key: key, version: options.version})
     return this
   }
   Batch.prototype.clear = function () {

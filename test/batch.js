@@ -36,7 +36,7 @@ test("batch delete", function (t) {
     {type: "put", key: "pet", value: "spot", version: 1},
   ], function (err) {
     t.notOk(err, "no error")
-    db.get("watch", 5, function (err, value, version) {
+    db.get("watch", {version: 5}, function (err, value, version) {
       t.ok(err, "Deleted, never owned a rolex.")
     })
   })

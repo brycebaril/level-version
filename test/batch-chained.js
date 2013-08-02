@@ -13,11 +13,11 @@ test("batch", function (t) {
 
   db.batch()
     .put("pet", "sparky")
-    .put("watch", "rolex", 5)
-    .put("pet", "scratch", 334)
-    .put("pet", "fluffy", 0)
-    .put("watch", "calculator", 11)
-    .put("watch", "casio", 14)
+    .put("watch", "rolex", {version: 5})
+    .put("pet", "scratch", {version: 334})
+    .put("pet", "fluffy", {version: 0})
+    .put("watch", "calculator", {version: 11})
+    .put("watch", "casio", {version: 14})
     .write(function (err) {
       t.notOk(err, "No error")
       db.get("pet", function (err, value, version) {
@@ -32,11 +32,11 @@ test("batch delete", function (t) {
   t.plan(2)
 
   db.batch()
-    .del("watch", 5)
-    .put("pet", "spot", 1)
+    .del("watch", {version: 5})
+    .put("pet", "spot", {version: 1})
     .write(function (err) {
     t.notOk(err, "no error")
-      db.get("watch", 5, function (err, value, version) {
+      db.get("watch", {version: 5}, function (err, value, version) {
         t.ok(err, "Deleted, never owned a rolex.")
       })
     })

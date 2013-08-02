@@ -20,7 +20,7 @@ test("put", function (t) {
     t.equals(value, "bar")
   })
 
-  db.put("foo", "bar", version)
+  db.put("foo", "bar", {version: version})
 })
 
 // TODO is this wanted?
@@ -32,7 +32,7 @@ test("child put forwarded to parents", function (t) {
     t.equals(value, "zap")
   })
 
-  db.put("zip", "zap", version)
+  db.put("zip", "zap", {version: version})
 })
 
 // TODO is this wanted?
@@ -44,5 +44,5 @@ test("parent put forwarded to child listener", function (t) {
     t.equals(value, "meow")
   })
 
-  testdb.put("cat", "meow", version)
+  testdb.put("cat", "meow", {version: version})
 })

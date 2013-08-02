@@ -9,7 +9,7 @@ var db = version(testdb, {defaultVersion: function () { return 99999 }})
 test("put version 12345", function (t) {
   t.plan(2)
 
-  db.put("pet", "spike", 12345, function (err, version) {
+  db.put("pet", "spike", {version: 12345}, function (err, version) {
     t.notOk(err, "no error")
     t.equals(version, 12345, "Callback includes version")
   })
@@ -18,7 +18,7 @@ test("put version 12345", function (t) {
 test("put version 0", function (t) {
   t.plan(2)
 
-  db.put("pet", "fluffy", 0, function (err, version) {
+  db.put("pet", "fluffy", {version: 0}, function (err, version) {
     t.notOk(err, "no error")
     t.equals(version, 0, "Callback includes version")
   })

@@ -11,11 +11,11 @@ var lastVersion
 test("stuff some datas", function (t) {
   t.plan(2)
 
-  db.put("pet", "scratch", 334)
-  db.put("pet", "fluffy", -1)
-  db.put("pet", "spot", 1)
-  db.put("watch", "calculator", 11)
-  db.put("watch", "casio", 14)
+  db.put("pet", "scratch", {version: 334})
+  db.put("pet", "fluffy", {version: -1})
+  db.put("pet", "spot", {version: 1})
+  db.put("watch", "calculator", {version: 11})
+  db.put("watch", "casio", {version: 14})
   db.put("pet", "sparky", function (err, version) {
     t.notOk(err, "no error")
     t.ok(version > Date.now() - 1000, "Default version is a recent timestamp")

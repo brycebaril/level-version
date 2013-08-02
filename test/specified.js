@@ -15,7 +15,7 @@ function encode(version) {
 test("put version 0", function (t) {
   t.plan(2)
 
-  db.put("pet", "fluffy", 0, function (err, version) {
+  db.put("pet", "fluffy", {version: 0}, function (err, version) {
     t.notOk(err, "no error")
     t.equals(version, 0, "Callback includes version")
   })
@@ -24,7 +24,7 @@ test("put version 0", function (t) {
 test("put version 1", function (t) {
   t.plan(2)
 
-  db.put("pet", "spot", 1, function (err, version) {
+  db.put("pet", "spot", {version: 1}, function (err, version) {
     t.notOk(err, "no error")
     t.equals(version, 1, "Callback includes version")
   })
@@ -33,7 +33,7 @@ test("put version 1", function (t) {
 test("get version 0", function (t) {
   t.plan(3)
 
-  db.get("pet", 0, function (err, value, version) {
+  db.get("pet", {version: 0}, function (err, value, version) {
     t.notOk(err, "no error")
     t.equals(value, "fluffy")
     t.equals(version, 0, "callback includes version")
@@ -43,7 +43,7 @@ test("get version 0", function (t) {
 test("get version 1", function (t) {
   t.plan(3)
 
-  db.get("pet", 1, function (err, value, version) {
+  db.get("pet", {version: 1}, function (err, value, version) {
     t.notOk(err, "no error")
     t.equals(value, "spot")
     t.equals(version, 1, "callback includes version")
@@ -70,7 +70,7 @@ test("bypass wrapper version 0", function (t) {
 test("delete version 0", function (t) {
   t.plan(2)
 
-  db.del("pet", 0, function (err, version) {
+  db.del("pet", {version: 0}, function (err, version) {
     t.notOk(err, "no error")
     t.equals(version, 0, "we get the version back")
   })
@@ -79,7 +79,7 @@ test("delete version 0", function (t) {
 test("version 0 gone", function (t) {
   t.plan(1)
 
-  db.get("pet", 0, function (err, value, version) {
+  db.get("pet", {version: 0}, function (err, value, version) {
     t.ok(err, "version 0 no longer exists")
   })
 })
