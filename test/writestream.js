@@ -8,6 +8,15 @@ var db = version(testdb)
 
 var lastVersion
 
+test("stuff a value to delete", function (t) {
+  t.plan(2)
+
+  db.put("meal", "pbj sandwich", {version: 20}, function (err, version) {
+    t.notOk(err, "no error")
+    t.equals(version, 20, "version is set correctly")
+  })
+})
+
 test("stuff some datas", function (t) {
 
   function checkOne() {
@@ -26,6 +35,7 @@ test("stuff some datas", function (t) {
   ws.write({key: "pet", value: "spot", version: 1})
   ws.write({key: "watch", value: "calculator", version: 11})
   ws.write({key: "watch", value: "casio", version: 14})
+  ws.write({type: "del", key: "meal", version: 20})
   ws.end(function () {
     // Wait for leveldb to catch up (it ends when things are still buffered?)
     setTimeout(checkOne, 50)
