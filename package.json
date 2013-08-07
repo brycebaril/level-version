@@ -1,6 +1,6 @@
 {
   "name": "level-version",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Versioned data for levelup.",
   "main": "index.js",
   "directories": {
