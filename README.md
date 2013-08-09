@@ -100,9 +100,11 @@ Construct a new levelup object with version as a wrapper. The original `leveldb`
 [Garbage Collection](#gc) options can be set in order to control how many versions of each record are retained.
 
 ### Options
- * gcMaxVersions: [no default] When doing GC it will only keep gcMaxVersions for each key
- * gcMaxAge: [no default] When doing GC only keep versions where (latest_version) - gcMaxAge > version
- * gcFreqMs: [60000] How often the GC runs to apply GC rules. Only runs if a gcMax* option is set.
+ * gcMaxVersions [no default] When doing GC it will only keep gcMaxVersions newest versions of each key
+ * gcMaxAge [no default] When doing GC only keep versions where Date.now() - gcMaxAge > version
+ * gcFreqMs [60000] How often the GC runs to apply GC rules. Only runs if a gcMax* option is set.
+ * gcBackup [no default] A level-version instance to stream culled records into
+ * gcCallback [no default] A callback to execute when gc sweeps complete
  * defaultVersion: [Date.now] A function to provide the default version if none is specified.
  * delimiter: [\xff] The internal delimiter to use.
 
@@ -239,7 +241,13 @@ ws.end()
 Garbage Collection
 ------------------
 
-TODO...
+When creating your versioned db, you can specify options related to garbage collection. If you set a `gcMaxVersions` or `gcMaxAge` it will periodically scan through your db instance and delete any versions based on the criteria you've specified.
+
+ * gcMaxVersions [no default] When doing GC it will only keep gcMaxVersions newest versions of each key
+ * gcMaxAge [no default] When doing GC only keep versions where Date.now() - gcMaxAge > version
+ * gcFreqMs [60000] How often the GC runs to apply GC rules. Only runs if a gcMax* option is set.
+ * gcBackup [no default] A level-version instance to stream culled records into
+ * gcCallback [no default] A callback to execute when gc sweeps complete
 
 LICENSE
 =======

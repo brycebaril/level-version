@@ -103,7 +103,7 @@ test("stream ranged start/end reverse", function (t) {
   var versions = []
   db.createReadStream({minVersion: 1, maxVersion: 500, start: "pet", end: "pet", reverse: true})
     .on("data", function (record) {
-      t.ok(record.key, "Record has a key")
+      t.equals(record.key, "pet", "Record has a key and it is pet")
       t.ok(record.value, "Record has a value")
       t.ok(record.version != null, "record has a version")
       versions.push(record.version)

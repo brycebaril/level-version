@@ -6,6 +6,7 @@ module.exports.Version = Version
 var wrap = require("level-onion")
 var fix = require("level-fix-range")
 var concat = require("concat-stream")
+var gc = require("./gc")
 
 var through = require("through2")
 
@@ -18,23 +19,20 @@ var decode = u.decode
 
 /**
  * @param  {Object} options  Wrapping options
- *                           - gcMaxVersions [no default] When doing GC it will only keep gcMaxVersions for each key
- *                           - gcMaxAge [no default] When doing GC only keep versions where (latest_version) - gcMaxAge > version
- *                           - gcFreqMs [60000] How often the GC runs to apply GC rules. Only runs if a gcMax* option is set.
- *                           - defaultVersion [Date.now] A function to provide the default version if none is specified.
- *                           - delimiter [\xff] The internal delimiter to use.
+ *   - gcMaxVersions [no default] When doing GC it will only keep gcMaxVersions for each key
+ *   - gcMaxAge [no default] When doing GC only keep versions where (latest_version) - gcMaxAge > version
+ *   - gcFreqMs [60000] How often the GC runs to apply GC rules. Only runs if a gcMax* option is set.
+ *   - gcBackup [no default] A level-version instance to put gc-culled records into.
+ *   - gcCallback [no default] A callback to execute when gc sweeps complete
+ *   - defaultVersion [Date.now] A function to provide the default version if none is specified.
+ *   - delimiter [\xff] The internal delimiter to use.
  */
 
 function Version(options) {
   this.type = "version"
   this.unique = true
   options = options || {}
-
-  // TODO GC stuffs.
-  var gcOptions = {}
-  if (options.gcMaxVersions) gcOptions.gcMaxVersions = +options.gcMaxVersions
-  if (options.gcMaxAge) gcOptions.gcMaxAge = +options.gcMaxAge
-  if (options.gcFreqMs) gcOptions.gcFreqMs = +options.gcFreqMs
+  this.options = options
 
   if (!options.defaultVersion) options.defaultVersion = Date.now
   if (typeof options.defaultVersion != "function") throw new Error("defaultVersion generator must be a function.")
@@ -47,6 +45,10 @@ Version.prototype.install = function (db, parent) {
 
   var self = this
   var sep = this.delimiter
+
+  setTimeout(function () {
+    self.gc = gc(db, self.options)
+  }, self.options.gcFreqMs)
 
   /* -- put -- */
   db.put = function (key, value, options, cb) {
@@ -225,6 +227,8 @@ Version.prototype.install = function (db, parent) {
   db.keyStream = db.createKeyStream
 
   /* -- createValueStream -- */
+  // TODO this may break the contract of levelup.createValueStream
+  //  as this puts it in objectMode vs Buffer mode with raw values...
   db.createValueStream = function (options) {
     options = options || {}
     options.keys = false
@@ -262,8 +266,10 @@ Version.prototype.install = function (db, parent) {
 
     var transform = through({objectMode: true}, function (record, encoding, cb) {
       var version = (record.version != null) ? record.version : self.defaultVersion()
-      record.key = makeKey(sep, record.key, version)
-      this.push(record)
+
+      // Important to make a copy here in case we're saving this in multiple places.
+      var insert = {type: record.type, key: makeKey(sep, record.key, version), value: record.value}
+      this.push(insert)
       cb()
     })
 
@@ -273,4 +279,10 @@ Version.prototype.install = function (db, parent) {
     return transform
   }
   db.writeStream = db.createWriteStream
+
+  /* -- close -- */
+  db.close = function (cb) {
+    if (this.gc) this.gc.stop()
+    return parent.close()
+  }
 }
