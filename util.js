@@ -9,7 +9,8 @@ module.exports.MIN_VERSION = -Math.pow(2, 53)
 
 // TODO currently versions locked to numbers...
 
-var bytewise = require("bytewise")
+// Using "hex" to avoid binary encoding for browsers...
+var bytewise = require("bytewise/hex")
 
 function makeKey(delimiter, key, version) {
   return [key, encode(version)].join(delimiter)
@@ -38,12 +39,12 @@ function wrapCb(version, cb) {
 }
 
 // Returns versions are stored in reverse order (-version) because the most common stream is new->old
+// TODO -- make this optional, timestream does *not* want it.
 
-// Using "hex" to avoid binary encoding for browsers...
 function encode(version) {
-  return bytewise.encode(-version).toString("hex")
+  return bytewise.encode(-version)
 }
 
 function decode(version) {
-  return -bytewise.decode(new Buffer(version, "hex"))
+  return -bytewise.decode(version)
 }
