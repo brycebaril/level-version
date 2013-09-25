@@ -35,14 +35,14 @@ function Version(options) {
   this.options = options
 
   if (!options.defaultVersion) options.defaultVersion = Date.now
-  if (typeof options.defaultVersion != "function") throw new Error("defaultVersion generator must be a function.")
+  if (typeof options.defaultVersion != "function")
+    throw new Error("defaultVersion generator must be a function.")
 
   this.delimiter = (options.delimiter != null) ? options.delimiter : "\xff"
   this.defaultVersion = options.defaultVersion
 }
 
 Version.prototype.install = function (db, parent) {
-
   var self = this
   var sep = this.delimiter
 
@@ -56,6 +56,7 @@ Version.prototype.install = function (db, parent) {
       cb = options
       options = {}
     }
+    if (options == null) options = {}
 
     var version = (options.version != null) ? options.version : self.defaultVersion()
 
@@ -69,6 +70,7 @@ Version.prototype.install = function (db, parent) {
       cb = options
       options = {}
     }
+    if (options == null) options = {}
 
     if (options.version == null) {
       return db.getLast(key, options, cb)
