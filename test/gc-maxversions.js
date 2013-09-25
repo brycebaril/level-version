@@ -3,8 +3,8 @@ var test = require("tape").test
 var version = require("../")
 
 var level = require("level-test")()
-var testdb = level("test-gc-maxage")
-var lts = version(level("test-gc-maxage-lts"))
+var testdb = level("test-gc-maxvers")
+var lts = version(level("test-gc-maxvers-lts"))
 
 var FIVE_MIN = 300000
 var TEN_MIN = 600000

@@ -1,7 +1,7 @@
 var test = require("tape").test
 
 var level = require("level-test")()
-var testdb = level("test-specified")
+var testdb = level("test-custom-sep")
 
 var version = require("../")
 

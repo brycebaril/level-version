@@ -5,6 +5,10 @@ Create versioned data inside leveldb.
 
 [![NPM](https://nodei.co/npm/level-version.png)](https://nodei.co/npm/level-version/)
 
+
+[![david-dm](https://david-dm.org/brycebaril/level-version.png)](https://david-dm.org/brycebaril/level-version/)
+[![david-dm](https://david-dm.org/brycebaril/level-version/dev-status.png)](https://david-dm.org/brycebaril/level-version#info=devDependencies/)
+
 `level-version` wraps levelup in a similar way to `level-sublevel` works, where instead of assigning your keys a prefix, it postfixes your keys with a version stamp.
 
 By default the versions are millisecond timestamps, but they can be anything you want. Either specify them manually or provide a default version generating function. For some of the features to work correctly the versions should lexically sort. In the initial version some features only support numeric versions, but with some modifications it should all be able to support non-numeric lexically ordered values.

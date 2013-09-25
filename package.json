@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "tap test/"
+    "test": "node test/"
   },
   "repository": {
     "type": "git",
@@ -25,18 +25,17 @@
     "url": "https://github.com/brycebaril/level-version/issues"
   },
   "devDependencies": {
-    "tap": "~0.4.3",
-    "tape": "~1.0.4",
+    "tape": "~1.1.1",
     "level-test": "~1.5.1",
-    "level-sublevel": "~4.8.3"
+    "level-sublevel": "~5.1.1"
   },
   "dependencies": {
     "level-onion": "0.0.1",
-    "bytewise": "~0.5.0",
+    "bytewise": "~0.6.0",
     "level-fix-range": "~2.0.0",
-    "xtend": "~2.0.6",
-    "concat-stream": "~1.0.0",
-    "through2": "~0.1.0",
+    "xtend": "~2.1.1",
+    "concat-stream": "~1.0.1",
+    "through2": "~0.2.2",
     "loose-interval": "~1.0.0",
     "level-gc": "~1.0.1"
   }
