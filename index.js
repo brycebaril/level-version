@@ -70,6 +70,12 @@ Version.prototype.install = function (db, parent) {
       cb = options
       options = {}
     }
+    
+    if (cb && options && !(options instanceof Function) && typeof options !== "object") {
+      // option candy machine
+      options = {version: options}
+    }
+    
     if (options == null) options = {}
 
     if (options.version == null) {
