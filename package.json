@@ -25,18 +25,18 @@
     "url": "https://github.com/brycebaril/level-version/issues"
   },
   "devDependencies": {
-    "tape": "~1.1.1",
-    "level-test": "~1.5.1",
-    "level-sublevel": "~5.1.1"
+    "tape": "~2.4.0",
+    "level-test": "~1.6.1",
+    "level-sublevel": "~5.2.0"
   },
   "dependencies": {
     "level-onion": "0.0.1",
-    "bytewise": "~0.6.0",
+    "bytewise": "~0.7.0",
     "level-fix-range": "~2.0.0",
-    "xtend": "~2.1.1",
-    "concat-stream": "~1.0.1",
-    "through2": "~0.2.2",
+    "xtend": "~2.1.2",
+    "concat-stream": "~1.4.1",
+    "through2": "~0.4.1",
     "loose-interval": "~1.0.0",
-    "level-gc": "~1.0.1"
+    "level-gc": "~1.0.3"
   }
 }
