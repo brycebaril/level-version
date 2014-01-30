@@ -10,6 +10,7 @@ var gc = require("./gc")
 
 // TODO until https://github.com/rvagg/node-levelup/issues/218 is resolved
 var NotFoundError = require("levelup/lib/errors").NotFoundError
+var NativeBatch = require("levelup/lib/batch")
 
 var through = require("through2")
 
@@ -123,29 +124,32 @@ Version.prototype.install = function (db, parent) {
 
   /* -- batch -- */
 
-  // TODO This is incomplete as it doesn't allow the per-command
-  // options override that you get with chained batch syntax.
   function Batch() {
-    this.ops = []
+    this._batch = new NativeBatch(parent)
   }
   Batch.prototype.put = function (key, value, options) {
-    // TODO ignoring options...
-    options = options || {}
-    this.ops.push({type: "put", key: key, value: value, version: options.version})
+    if (options == null) options = {}
+    var version = (options.version != null) ? options.version : self.defaultVersion()
+    this._batch.put(makeKey(sep, key, version), value, options)
     return this
   }
   Batch.prototype.del = function (key, options) {
-    // TODO ignoring options...
-    options = options || {}
-    this.ops.push({type: "del", key: key, version: options.version})
+    var version = (options.version != null) ? options.version : self.defaultVersion()
+    this._batch.del(makeKey(sep, key, version), options)
     return this
   }
   Batch.prototype.clear = function () {
-    this.ops = []
+    this._batch.clear()
     return this
   }
-  Batch.prototype.write = function (cb) {
-    db.batch(this.ops, cb)
+  Batch.prototype.write = function (callback) {
+    parent.once("batch", function (batch) {
+      // TODO this has a potential race condition if someone is simultaneously writing batches
+      // against the non-version-wrapped parent.
+      db.emit("batch", batch)
+    })
+    this._batch.write(callback)
+    return this
   }
 
   db.batch = function (arr, options, cb) {
