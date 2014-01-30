@@ -34,9 +34,10 @@
     "bytewise": "~0.7.0",
     "level-fix-range": "~2.0.0",
     "xtend": "~2.1.2",
-    "concat-stream": "~1.4.1",
     "through2": "~0.4.1",
     "loose-interval": "~1.0.0",
-    "level-gc": "~1.0.3"
+    "level-gc": "~1.0.3",
+    "levelup": "~0.18.2",
+    "terminus": "~1.0.8"
   }
 }

@@ -5,8 +5,11 @@ module.exports.Version = Version
 
 var wrap = require("level-onion")
 var fix = require("level-fix-range")
-var concat = require("concat-stream")
+var concat = require("terminus").concat
 var gc = require("./gc")
+
+// TODO until https://github.com/rvagg/node-levelup/issues/218 is resolved
+var NotFoundError = require("levelup/lib/errors").NotFoundError
 
 var through = require("through2")
 
@@ -87,7 +90,9 @@ Version.prototype.install = function (db, parent) {
     if (!cb) throw new Error("Get with no callback?")
 
     function collect(records) {
-      if (!records || !records.length) return cb(new Error("Did not find a record %s", key))
+      if (!records || !records.length) {
+        return cb(new NotFoundError("Key not found in database [" + key + "]"))
+      }
       var r = records[0]
       // TODO other options?
       if (options && options.valueEncoding == "json") r.value = JSON.parse(r.value)
@@ -95,7 +100,7 @@ Version.prototype.install = function (db, parent) {
     }
 
     db.createVersionStream(key, {limit: 1, reverse: reverse})
-      .pipe(concat(collect))
+      .pipe(concat({objectMode: true}, collect))
   }
 
   db.getLast = function (key, options, cb) {
