@@ -18,7 +18,7 @@ function makeKey(delimiter, key, version) {
 
 function unmakeKey(delimiter, key) {
   if (key == null) return {key: key}
-  var parts = key.split(delimiter)
+  var parts = key.toString().split(delimiter)
   // If this happens, who knows what's going on.
   if (parts.length <= 1) return {key: key}
 
